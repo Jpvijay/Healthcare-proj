@@ -43,7 +43,7 @@ pipeline {
          }
       }
     }
-        stage('Terraform Operations for Production workspace') {
+    stage('Terraform Operations for Production workspace') {
       steps {
         script {
           sh '''

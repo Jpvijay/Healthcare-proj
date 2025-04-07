@@ -23,6 +23,20 @@ pipeline {
         sh 'docker build -t vijayhub11/healthcare:latest .'
                           }
             }
+    stage('Login to Dockerhub') {
+      steps {
+        echo 'This stage will loginto Dockerhub' 
+        withCredentials([usernamePassword(credentialsId: 'dockercred', passwordVariable: 'dockpass', usernameVariable: 'dockusername')]) {
+        sh 'docker login -u ${dockusername} -p ${dockpass}'
+            }
+         }
+     }
+    stage('Docker Push-Image') {
+      steps {
+        echo 'This stage will push my new image to the dockerhub'
+        sh 'docker push vijayhub11/healthcare:latest'
+            }
+      }
     stage('AWS-Login') {
       steps {
         withCredentials([aws(accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'awskeys', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {

@@ -37,29 +37,42 @@ pipeline {
         sh 'docker push vijayhub11/healthcare:latest'
             }
       }
-    stage('AWS-Login') {
-      steps {
-        withCredentials([aws(accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'awskeys', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
-         }
-      }
-    }
     stage('Terraform Operations for Production workspace') {
-      steps {
+    steps {
         script {
-          sh '''
-            terraform workspace select prod || terraform workspace new prod
-            terraform init
-            terraform plan
-            terraform destroy -auto-approve
-          '''
+            def terraformHome = '/usr/bin/terraform'
+
+            withAWS(credentialsId: 'awskeys', region: "${env.AWS_REGION}") {
+                sh """
+                #!/bin/bash
+                set -e
+                export PATH=$PATH:${terraformHome}
+                terraform workspace select prod || terraform workspace new prod
+                terraform init
+                terraform plan
+                terraform destroy -auto-approve
+                """
+            }
         }
-      }
     }
-    stage('Terraform destroy & apply for production workspace') {
-      steps {
-        sh 'terraform apply -auto-approve'
-      }
+}
+
+stage('Terraform destroy & apply for production workspace') {
+    steps {
+        script {
+            def terraformHome = '/usr/bin/terraform'
+
+            withAWS(credentialsId: 'awskeys', region: "${env.AWS_REGION}") {
+                sh """
+                #!/bin/bash
+                set -e
+                export PATH=$PATH:${terraformHome}
+                terraform apply -auto-approve
+                """
+            }
+        }
     }
+}
     stage('get kubeconfig for production') {
       steps {
         sh 'aws eks update-kubeconfig --region us-east-1 --name prod-cluster'

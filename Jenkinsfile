@@ -17,12 +17,6 @@ pipeline {
         sh 'mvn package'
                           }
             }
-    stage('Test Results') {
-      steps {
-        echo 'This is for generating Test Results'
-        publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: '/var/lib/jenkins/workspace/Insureme/target/surefire-reports', reportFiles: 'index.html', reportName: 'HTML Report', reportTitles: '', useWrapperFileDirectly: true])
-            }
-          }
      stage('Create Docker Image') {
       steps {
         echo 'This stage will Create a Docker image'

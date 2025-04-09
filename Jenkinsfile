@@ -33,7 +33,7 @@ pipeline {
       steps {
         echo 'This stage will loginto Dockerhub' 
         withCredentials([usernamePassword(credentialsId: 'dockercred', passwordVariable: 'dockpass', usernameVariable: 'dockuser')]) {
-        sh 'docker login -u ${dockusername} -p ${dockpass}'
+        sh 'docker login -u ${dockuser} -p ${dockpass}'
             }
          }
      }
